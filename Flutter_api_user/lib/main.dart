@@ -1,7 +1,10 @@
+import 'package:api_user/create_student_form.dart';
+import 'package:api_user/update_form.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +34,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late Future<List<student>> studentList;
+  Client client = http.Client();
+
+  // void _deletestudent(int id) {
+  //   client.delete(deleteUrl(id));
+  // }
+  void del(int id) {
+    String str_id = id.toString();
+    var deleteUrl = Uri.parse('http://127.0.0.1:8000/delete/' + str_id);
+    client.delete(deleteUrl);
+  }
 
   @override
   void initState() {
@@ -41,70 +54,110 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.green,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text('Django Api data fetcher')],
-          ),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.green,
+        title: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text('Django Api data fetcher')],
         ),
-        body: Container(
+      ),
+      body: Container(
+        color: Colors.green,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: FutureBuilder<List<student>>(
+          future: studentList,
+          builder: (context, abc) {
+            if (abc.hasData) {
+              return ListView.builder(
+                itemCount: abc.data!.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Card(
+                      elevation: 10,
+                      child: ListTile(
+                        // leading: Text('${abc.data![index].id}'),
+                        // title: Text('${abc.data![index].name}'),
+                        leading: Icon(
+                          Icons.person,
+                          color: Colors.green,
+                        ),
+                        title: Text(
+                            '${abc.data![index].name + " (" + abc.data![index].rollnumber + ")"}'),
+
+                        subtitle: Text('${abc.data![index].message}'),
+                        // trailing: Text('${abc.data![index].rollnumber}'),
+                        trailing: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => updateStudentForm(
+                                            id: abc.data![index].id,
+                                            name: abc.data![index].name,
+                                            rollnumber:
+                                                abc.data![index].rollnumber,
+                                            message: abc.data![index].message)),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.green,
+                                )),
+                            IconButton(
+                                onPressed: () {
+                                  del(abc.data![index].id);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MyHomePage()),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ))
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+              //Text(abc.data.length.toString());
+            } else if (abc.hasError) {
+              return Text("tt:${abc.error}");
+            }
+
+            // By default, it show a loading spinner.
+            return CircularProgressIndicator();
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Student_Form()),
+          );
+          // Add your onPressed code here!
+        },
+        backgroundColor: Colors.white,
+        child: const Icon(
+          Icons.add,
           color: Colors.green,
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: FutureBuilder<List<student>>(
-            future: studentList,
-            builder: (context, abc) {
-              if (abc.hasData) {
-                return ListView.builder(
-                  itemCount: abc.data!.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Text('${abc.data![index].id}'),
-                      title: Text('${abc.data![index].name}'),
-                      subtitle: Text('${abc.data![index].message}'),
-                      trailing: Text('${abc.data![index].rollnumber}'),
-                    );
-                  },
-                );
-                //Text(abc.data.length.toString());
-              } else if (abc.hasError) {
-                return Text("tt:${abc.error}");
-              }
-
-              // By default, it show a loading spinner.
-              return CircularProgressIndicator();
-            },
-          ),
-
-          // SingleChildScrollView(
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(20.0),
-          //     child: Card(
-          //       elevation: 10,
-          //       child: ListTile(
-          //         leading: Icon(Icons.person),
-          //         title: Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           mainAxisSize: MainAxisSize.max,
-          //           children: [Text('Name'), Text('RollNumber')],
-          //         ),
-          //         subtitle: Text('Message'),
-          //         trailing: Row(
-          //           mainAxisAlignment: MainAxisAlignment.end,
-          //           mainAxisSize: MainAxisSize.min,
-          //           children: [
-          //             IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-          //             IconButton(onPressed: () {}, icon: Icon(Icons.delete))
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-        ));
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
   }
 }
 

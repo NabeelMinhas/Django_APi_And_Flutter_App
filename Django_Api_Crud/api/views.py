@@ -10,8 +10,6 @@ def getRoutes(request):
         {
             'EndPoint' : '/allstudent',
             'method':'GET'
-            
-
         },
 
     ]

@@ -3,7 +3,7 @@
 1) Clone/download the repository 
 2) Open in visual studio code or any other IDE or software
 
-# ************************* Django Setup *************************
+# **************** Django Setup ****************
 
 1) Change the directory to Django_Api_Crud  by running the command "cd Django_Api_Crud".
 2) Than activate the virtual environment by typing "my_env\Scripts\activate" and hit enter.
@@ -13,7 +13,7 @@
 5) Then install Django cors_headers by running the command "pip install django-cors-headers".
 6) Now your can run the server by running the command "python manage.py runserver".
 
-# ************************* Flutter Setup *************************
+# **************** Flutter Setup ****************
 
 1) Open the pubspec.yml file and press (ctrl + s) to sve the file so that all the packages will install for flutter. If packeges are not install then rewrite one or two words in     the pubspec file. Then hit (ctrl +s). The packages will install for flutter app.
 2) Now you can run the flutter app by opening the main file of flutter project which is inside the lib folder. 
